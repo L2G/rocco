@@ -32,7 +32,7 @@
 #### Prerequisites
 
 # We'll need a Markdown library. Try to load one if not already established.
-unless defined?(Markdown)
+unless defined?(Markdown) or defined?(Redcarpet::Markdown)
   markdown_libraries = %w[redcarpet rdiscount bluecloth]
   begin
     require markdown_libraries.shift
@@ -434,7 +434,12 @@ class Rocco
 
   # Convert Markdown to classy HTML.
   def process_markdown(text)
-    Markdown.new(text, :smart).to_html
+    if defined?(Redcarpet::Markdown)
+      markdown = Redcarpet::Markdown.new(Redcarpet::Render::HTML)
+      markdown.render(text)
+    else
+      Markdown.new(text, :smart).to_html
+    end
   end
 
   # We `popen` a read/write pygmentize process in the parent and
